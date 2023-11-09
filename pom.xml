@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.1.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>sia.exercise</groupId>
+	<artifactId>microservices</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>microservices-parent-pom</name>
+	<description>Demo project for Spring Boot</description>
+
+    <modules>
+        <module>licensing-service</module>
+		<module>confsvr</module>
+	</modules>
+
+    <properties>
+		<java.version>17</java.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.10</version>
+				<configuration>
+					<baseImage>java</baseImage>
+					<imageName>example</imageName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
