@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  database:
+    image: mysql:latest
+    container_name: licensing-service-db-1
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - backend
+
+  licensing-service:
+    image: licensing-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      PROFILE: dev
+      DATABASESERVER_PORT: "3306"
+    container_name: myLicensingService
+    depends_on:
+      - database
+    networks:
+      - backend
+
+volumes:
+  mysql-data:
+
+networks:
+  backend:
+    driver: bridge

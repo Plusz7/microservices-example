@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Eagle Eye Licensing Service</name>
+    <name>Optima Growth Licensing Service</name>
     <description>Licensing Service</description>
 
     <parent>
