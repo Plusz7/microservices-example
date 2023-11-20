@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  vault:
+    image: hashicorp/vault
+    container_name: vault-dev
+    ports:
+      - "8200:8200"
+    environment:
+      - VAULT_ADDR=http://0.0.0.0:8200
+      - VAULT_API_ADDR=http://0.0.0.0:8200
+      - VAULT_ADDRESS=http://0.0.0.0:8200
+    volumes:
+      - ./config/config.hcl:/vault/config/config.hcl
+      - ./file:/file
+
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/config.hcl

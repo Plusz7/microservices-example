@@ -1,13 +1,16 @@
 package org.java.license.services;
 
 import com.mysql.cj.util.StringUtils;
+import org.java.license.config.ServiceConfig;
 import org.java.license.model.License;
+import org.java.license.repository.LicenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class LicenseService {
@@ -15,41 +18,48 @@ public class LicenseService {
     @Autowired
     MessageSource messages;
 
-    public License getLicense (String licenseId, String organizationId) {
-        License license = new License();
-        license.setId(new Random().nextInt(1000));
-        license.setLicenseId(licenseId);
-        license.setOrganizationId(organizationId);
-        license.setDescription("Software Product");
-        license.setProductName("Ostock");
-        license.setLicenseType("full");
+    @Autowired
+    private LicenseRepository licenseRepository;
 
-        return license;
-    }
+    @Autowired
+    ServiceConfig config;
 
-    public String createLicense(License license, String organizationId, Locale locale) {
-        String responseMessage = null;
-        if(license != null) {
-            license.setOrganizationId(organizationId);
-            responseMessage = String.format(messages.getMessage("license.create.message", null, locale), license);
+    public License getLicense(String licenseId, String organizationId) {
+        License license = licenseRepository.findByOrganizationIdAndLicenseId(licenseId, organizationId);
+        if (null == license) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            messages.getMessage("license.search.error.message", null, null),
+                            licenseId,
+                            organizationId
+                    )
+            );
         }
 
-        return responseMessage;
+        return license.withComment(config.getProperty());
     }
 
-    public String updateLicense(License license, String organizationId) {
-        String responseMessage = null;
-        if(!StringUtils.isNullOrEmpty(license.toString())) {
-            license.setOrganizationId(organizationId);
-            responseMessage = String.format(messages.getMessage("license.update.message", null, null), license);
-        }
+    public License createLicense(License license) {
 
-        return responseMessage;
+        license.setLicenseId(UUID.randomUUID().toString());
+        licenseRepository.save(license);
+
+        return license.withComment(config.getProperty());
+    }
+
+    public License updateLicense(License license, String organizationId) {
+        licenseRepository.save(license);
+
+        return license.withComment(config.getProperty());
     }
 
     public String deleteLicense(String licenseId, String organizationId) {
         String responseMessage = null;
-        responseMessage = String.format("Deleting license with id %s for the organization %s", licenseId, organizationId);
+        License license = new License();
+        license.setLicenseId(licenseId);
+        licenseRepository.delete(license);
+        responseMessage = String.format(
+                messages.getMessage("license.delete.message", null, null), licenseId);
         return responseMessage;
     }
 }
