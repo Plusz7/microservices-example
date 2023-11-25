@@ -66,4 +66,11 @@ public class LicenseServiceController {
             @PathVariable("licenseId") String licenseId) {
         return ResponseEntity.ok(licenseService.deleteLicense(licenseId, organizationId));
     }
+
+    public License getLicenseWithClient(
+            @PathVariable("organizationId") String organizationId,
+            @PathVariable("licenseId") String licenseId,
+            @PathVariable("clientType") String clientType) {
+        return licenseService.getLicense(organizationId, licenseId, clientType);
+    }
 }
