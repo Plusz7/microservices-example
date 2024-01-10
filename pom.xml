@@ -22,6 +22,7 @@
         <module>licensing-service</module>
 		<module>confsvr</module>
 		<module>eurekaserver</module>
+		<module>organization-service</module>
 	</modules>
 
     <properties>

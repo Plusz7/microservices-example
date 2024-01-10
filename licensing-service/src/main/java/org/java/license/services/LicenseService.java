@@ -12,8 +12,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Locale;
-import java.util.Random;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -110,5 +109,9 @@ public class LicenseService {
         }
 
         return organization;
+    }
+
+    public List<License> getLicensesByOrganization(String organizationId) {
+        return licenseRepository.findByOrganizationId(organizationId);
     }
 }
