@@ -1,7 +1,6 @@
 package org.java.license.services.client;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.DiscoveryClient;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.java.license.model.Organization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -24,9 +23,8 @@ public class OrganizationDiscoveryClient {
 
 
     public Mono<Organization> getOrganization(String organizationId) {
-        List<InstanceInfo> instances = discoveryClient.getInstancesById("organization-service");
-        String instanceUrl = String.format("%s/v1/organization/%s", instances.get(0).getHostName() + ":" + instances.get(0).getPort(), organizationId);
-//        builder.baseUrl().build();
+        List<ServiceInstance> instances = discoveryClient.getInstances("organization-service");
+        String instanceUrl = String.format("%s/v1/organization/%s",instances.get(0).getUri().toString(), organizationId);
         return builder.build()
                 .get()
                 .uri(instanceUrl)

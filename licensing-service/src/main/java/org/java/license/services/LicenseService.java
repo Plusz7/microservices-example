@@ -1,6 +1,5 @@
 package org.java.license.services;
 
-import com.mysql.cj.util.StringUtils;
 import org.java.license.config.ServiceConfig;
 import org.java.license.model.License;
 import org.java.license.model.Organization;
