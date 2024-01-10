@@ -8,3 +8,6 @@ Spring Microservices
   
 - changes were made in configuration repo to match licensing service docker configuration
 - created dockerfile and docker-compose.yml to create a container with licensing service and mysql database connected within the container
+
+- created organization service
+- created a Eureka Server to monitor licensing service and organization service, each has their own db
