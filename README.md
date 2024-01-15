@@ -1,5 +1,7 @@
 # microservices-example
-Spring Microservices
+Spring Microservices, 
+
+This project is based on a Manning's Spring Microservices. It's a learning process about implementing new technologies, not a real project with clean code, or tests.
 
 - connection to config repo: https://github.com/Plusz7/configuration-repo 
 - db on local, and docker
