@@ -1,5 +1,12 @@
 package org.java.license.services;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import org.java.license.utils.UserContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.java.license.config.ServiceConfig;
 import org.java.license.model.License;
 import org.java.license.model.Organization;
@@ -12,8 +19,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class LicenseService {
@@ -35,6 +45,8 @@ public class LicenseService {
 
     @Autowired
     OrganizationDiscoveryClient organizationDiscoveryClient;
+
+    private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
 
     public License getLicense(String licenseId, String organizationId) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(licenseId, organizationId);
@@ -59,7 +71,7 @@ public class LicenseService {
                     messages.getMessage("license.search.error.message", null, null),
                     licenseId,
                     organizationId
-                )
+            )
             );
         }
         return license.withComment(config.getProperty());
@@ -111,7 +123,40 @@ public class LicenseService {
         return organization;
     }
 
-    public List<License> getLicensesByOrganization(String organizationId) {
+    private void randomlyRunLong() throws TimeoutException {
+        sleep();
+    }
+
+    private void sleep() throws TimeoutException {
+        try {
+            Thread.sleep(5000);
+            throw new java.util.concurrent.TimeoutException();
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+
+    @CircuitBreaker(name = "licenseService", fallbackMethod = "buildFallbackLicenseList")
+    @RateLimiter(name = "licenseService", fallbackMethod = "buildFallbackLicenseList")
+    @Retry(name = "retryLicenseService", fallbackMethod = "buildFallbackLicenseList")
+    @Bulkhead(name= "bulkheadLicenseService", fallbackMethod= "buildFallbackLicenseList")
+    public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
+
+        logger.debug("getLicensesByOrganization Correlation id: {}",
+                UserContextHolder.getContext().getCorrelationId());
+
         return licenseRepository.findByOrganizationId(organizationId);
     }
+
+    private List<License> buildFallbackLicenseList(String organizationId, Throwable t) {
+        List<License> fallbackList = new ArrayList<>();
+        License license = new License();
+        license.setLicenseId("0000000-00-00000");
+        license.setOrganizationId(organizationId);
+        license.setProductName("Sorry no licensing information currently available");
+        fallbackList.add(license);
+        return fallbackList;
+    }
+
 }
