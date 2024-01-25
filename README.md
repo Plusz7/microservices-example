@@ -13,3 +13,5 @@ This project is based on a Manning's Spring Microservices. It's a learning proce
 
 - created organization service
 - created a Eureka Server to monitor licensing service and organization service, each has their own db
+- implemented resilience patterns with circuit breakers fallback etc with Resilience 4j
+- implemented Gateway routing properly to services, keycloak as dockerized server, and getway (resource) and organization (resource) one endpoint available for admin ( work in progress ) ON BRANCH ONLY
