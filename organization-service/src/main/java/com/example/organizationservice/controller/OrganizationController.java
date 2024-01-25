@@ -2,9 +2,11 @@ package com.example.organizationservice.controller;
 
 import com.example.organizationservice.model.Organization;
 import com.example.organizationservice.service.OrganizationService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,6 +16,8 @@ public class OrganizationController {
     private OrganizationService service;
 
 
+//    @PreAuthorize("hasRole(ADMIN)")
+//    @RolesAllowed("ADMIN")
     @RequestMapping(value = "/{organizationId}", method = RequestMethod.GET)
     public ResponseEntity<Organization> getOrganization(@PathVariable("organizationId") String organizationId) {
         return ResponseEntity.ok(service.findById(organizationId));
